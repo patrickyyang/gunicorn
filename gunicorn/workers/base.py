@@ -48,6 +48,7 @@ class Worker(object):
         self.booted = False
         self.aborted = False
         self.reloader = None
+        self.index = -1
 
         self.nr = 0
         jitter = randint(0, cfg.max_requests_jitter)
@@ -123,6 +124,7 @@ class Worker(object):
             self.reloader.start()
 
         self.load_wsgi()
+        self.app.callable.index = self.index
         self.cfg.post_worker_init(self)
 
         # Enter main run loop

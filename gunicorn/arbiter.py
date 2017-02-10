@@ -562,6 +562,7 @@ class Arbiter(object):
         worker = self.worker_class(self.worker_age, self.pid, self.LISTENERS,
                                    self.app, self.timeout / 2.0,
                                    self.cfg, self.log)
+        worker.index = self.next_worker_index()
         self.cfg.pre_fork(self, worker)
         pid = os.fork()
         if pid != 0:
@@ -639,3 +640,19 @@ class Arbiter(object):
                 except (KeyError, OSError):
                     return
             raise
+
+    def next_worker_index(self):
+        """\
+        Get worker's index
+         """
+        workers = self.WORKERS.items()
+        workers = sorted(workers, key=lambda w: w[1].index)
+        if len(workers) > 0:
+            worker = workers[-1]
+            index = worker[1].index + 1
+            if index >= self.num_workers:
+                print("error occurs !!!!!! index error")
+            return index
+        else:
+            return 0
+
